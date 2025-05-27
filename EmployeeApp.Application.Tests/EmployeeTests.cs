@@ -55,21 +55,28 @@ public class EmployeeTests
     {
         // Arrange
         var employeeRepository = new Mock<IEmployeeRepository>();
-        employeeRepository
-            .Setup(e => e.GetAll())
-            .Returns([
-                new Employee { Id = 10, Name = "test", Email = "test@asdasd" },
-                new Employee { Id = 20, Name = "test2", Email = "test2@asdasd" }
-            ]);
         var employeeService = new EmployeeService(employeeRepository.Object);
+
         // Act
         var newEmployee = new Employee { Id = 30, Name = "New Employee", Email = "new.employee@test.fake.se" };
         employeeService.Add(newEmployee);
 
-        var employees = employeeService.GetAll();
-
         //Assert
-        Assert.Equal(3, employees.Length);
+        employeeRepository.Verify(e => e.Add(It.IsAny<Employee>()), Times.Exactly(1));
+    }
 
+    [Fact]
+    public void CheckIsVIP_EmailStartsWithAnders_ReturnsTrue()
+    {
+        // Arrange
+        var employeeRepository = new Mock<IEmployeeRepository>();
+        var employeeService = new EmployeeService(employeeRepository.Object);
+        var employee = new Employee { Id = 1, Name = "VIP Employee", Email = "anders.fake.employee@mail.fake.se" };
+
+        // Act
+        var isVIP = employeeService.CheckIsVIP(employee);
+
+        // Assert
+        Assert.True(isVIP);
     }
 }
