@@ -54,15 +54,32 @@ public class EmployeeTests
     public void Add_ShouldAddNewEmployeeToListOfEmployees()
     {
         // Arrange
+        var employees = new List<Employee>
+        {
+            new () { Id = 10, Name = "Test Employee 1", Email = "test.employee.1@fake.test.se" },
+            new () { Id = 20, Name = "Test Employee 2", Email = "test.employee.1@fake.test.se" }
+        };
+
         var employeeRepository = new Mock<IEmployeeRepository>();
+        employeeRepository
+            .Setup(e => e.GetAll())
+            .Returns(() => employees.ToArray());
+        employeeRepository
+            .Setup(e => e.Add(It.IsAny<Employee>()))
+            .Callback<Employee>(emp => employees.Add(emp));
+
         var employeeService = new EmployeeService(employeeRepository.Object);
 
         // Act
         var newEmployee = new Employee { Id = 30, Name = "New Employee", Email = "new.employee@test.fake.se" };
         employeeService.Add(newEmployee);
 
+        var allEmployees = employeeService.GetAll();
+
         //Assert
         employeeRepository.Verify(e => e.Add(It.IsAny<Employee>()), Times.Exactly(1));
+        Assert.Equal(3, allEmployees.Length);
+        Assert.Contains(allEmployees, e => e.Id == 30 && e.Name == "New Employee");
     }
 
     [Fact]
@@ -79,4 +96,6 @@ public class EmployeeTests
         // Assert
         Assert.True(isVIP);
     }
+
+
 }
