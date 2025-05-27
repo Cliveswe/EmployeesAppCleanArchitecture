@@ -8,7 +8,7 @@ namespace EmployeeApp.Application.Tests;
 public class EmployeeTests
 {
     [Fact]
-    public void GetByid_ValidId_ReturnEmployee() {
+    public void GetById_ValidId_ReturnEmployee() {
 
         // Arrange
         var employeeRepository = new Mock<IEmployeeRepository>();
